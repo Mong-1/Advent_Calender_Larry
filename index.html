@@ -1,18 +1,9 @@
 <!DOCTYPE html>
-<!--
-Created using JS Bin
-http://jsbin.com
-
-Copyright (c) 2025 by anonymous (http://jsbin.com/muwacawole/1/edit)
-
-Released under the MIT license: http://jsbin.mit-license.org
--->
-<meta name="robots" content="noindex">
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOCONNER Advent Calendar</title>
+    <title>Dear. LARRY Advent Calendar</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
@@ -20,7 +11,7 @@ Released under the MIT license: http://jsbin.mit-license.org
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
             margin: 0; padding: 0;
             background-color: #3c5d6d; 
-            background-image: url('https://i.ibb.co/qMtB9d9h/image.png'); 
+            background-image: url('https://i.ibb.co/zWgNNJMb/Kakao-Talk-20251219-133034683..png'); 
             background-size: contain; 
             background-position: center top;
             background-repeat: no-repeat;
@@ -31,7 +22,6 @@ Released under the MIT license: http://jsbin.mit-license.org
             min-height: 100vh;
         }
 
-        /* 1. 최상단 문구 */
         .top-phrase {
             font-family: 'Playfair Display', serif;
             font-size: 15px; 
@@ -39,14 +29,12 @@ Released under the MIT license: http://jsbin.mit-license.org
             font-weight: 900;
             color: #fff;
             margin-top: 50px; 
-            margin-bottom: 0px;
             text-align: center;
             z-index: 10;
             text-shadow: 2px 2px 15px rgba(0,0,0,0.6);
             text-transform: uppercase;
         }
 
-        /* 2. 메인 헤더 박스 */
         .header-box {
             background-color: rgba(255, 255, 255, 0.85); 
             backdrop-filter: blur(10px);
@@ -72,11 +60,17 @@ Released under the MIT license: http://jsbin.mit-license.org
         
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 8px;
-            width: 95%; max-width: 700px;
+            /* 8일치이므로 한 줄에 4개씩 배치하면 예쁩니다 */
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 12px;
+            width: 95%; max-width: 600px;
             margin-bottom: 50px;
             z-index: 5;
+        }
+
+        /* 모바일에서는 한 줄에 2개씩 보이도록 조절 */
+        @media (max-width: 480px) {
+            .calendar-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
         .door {
@@ -94,14 +88,9 @@ Released under the MIT license: http://jsbin.mit-license.org
             background-color: #ffffff; 
         }
 
-        .door .month { 
-            font-size: 13px; text-transform: uppercase; color: #000; font-weight: 900; margin-bottom: 2px;
-        }
-        .door .day { 
-            font-size: 32px; font-weight: 900; color: #000; line-height: 1;
-        }
+        .door .month { font-size: 11px; text-transform: uppercase; color: #E2A344; font-weight: 900; margin-bottom: 2px; }
+        .door .day { font-size: 28px; font-weight: 900; color: #000; line-height: 1; }
 
-        /* 3. 최하단 문구 */
         .footer-phrase {
             font-family: 'Playfair Display', serif;
             font-size: 12px; 
@@ -116,7 +105,6 @@ Released under the MIT license: http://jsbin.mit-license.org
             opacity: 0.9;
         }
 
-        /* 4. 팝업 및 편지 내용 */
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); z-index: 9999;
@@ -134,8 +122,6 @@ Released under the MIT license: http://jsbin.mit-license.org
             position: relative; 
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
-        .modal-content::-webkit-scrollbar { width: 8px; }
-        .modal-content::-webkit-scrollbar-thumb { background: #E2A344; border-radius: 10px; }
 
         #letter-content {
             font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; 
@@ -152,16 +138,16 @@ Released under the MIT license: http://jsbin.mit-license.org
 </head>
 <body>
 
-    <div class="top-phrase">타이틀</div>
+    <div class="top-phrase">ADVENT CALENDAR</div>
 
     <div class="header-box">
-        <div class="main-title">메인박스타이틀</div>
-        <div id="live-clock">TODAY is······로딩 중</div>
+        <div class="main-title">DONYLARRY</div>
+        <div id="live-clock">로딩 중...</div>
     </div>
 
     <div class="calendar-grid" id="grid"></div>
 
-    <div class="footer-phrase">부제</div>
+    <div class="footer-phrase">COUNTDOWN TO NEW YEAR</div>
 
     <div id="modal" class="modal">
         <div class="modal-content">
@@ -171,6 +157,7 @@ Released under the MIT license: http://jsbin.mit-license.org
     </div>
 
     <script>
+        // 시계 업데이트
         function updateClock() {
             const now = new Date();
             const y = now.getFullYear();
@@ -179,34 +166,29 @@ Released under the MIT license: http://jsbin.mit-license.org
             const hh = String(now.getHours()).padStart(2, '0');
             const mm = String(now.getMinutes()).padStart(2, '0');
             const ss = String(now.getSeconds()).padStart(2, '0');
-            // 'is'와 '··' 사이 공백 제거 및 형식 수정
             document.getElementById('live-clock').innerText = `TODAY is······ ${y}.${m}.${d}. ${hh}:${mm}:${ss}`;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
+        // 1. 편지 내용 (24일 ~ 31일)
         const letters = {
-            "12-19": "편지 내용을 넣습니다.",
-            "12-20": "편지 내용을 넣습니다.",
-            "12-21": "편지 내용을 넣습니다.",
-            "12-22": "편지 내용을 넣습니다.",
-            "12-23": "편지 내용을 넣습니다.",
-            "12-24": "편지 내용을 넣습니다.",
-            "12-25": "편지 내용을 넣습니다. ",
-            "12-26": "편지 내용을 넣습니다.",
-            "12-27": "편지 내용을 넣습니다.",
-            "12-28": "편지 내용을 넣습니다.",
-            "12-29": "편지 내용을 넣습니다.",
-            "12-30": "편지 내용을 넣습니다.",
-            "12-31": "편지 내용을 넣습니다.",
-            "01-01": "편지 내용을 넣습니다."
+            "12-24": "크리스마스 이브 편지입니다.",
+            "12-25": "메리 크리스마스! 행복한 하루 되세요.",
+            "12-26": "편지 내용을 입력하세요.",
+            "12-27": "편지 내용을 입력하세요.",
+            "12-28": "편지 내용을 입력하세요.",
+            "12-29": "편지 내용을 입력하세요.",
+            "12-30": "편지 내용을 입력하세요.",
+            "12-31": "올해의 마지막 날입니다. 한 해 동안 고생 많으셨어요!"
         };
 
+        // 2. 날짜 설정 (24일 ~ 31일)
         const dates = [
-            {m: 12, d: 19, name: 'December'}, {m: 12, d: 20, name: 'December'}, {m: 12, d: 21, name: 'December'}, {m: 12, d: 22, name: 'December'},
-            {m: 12, d: 23, name: 'December'}, {m: 12, d: 24, name: 'December'}, {m: 12, d: 25, name: 'December'}, {m: 12, d: 26, name: 'December'},
-            {m: 12, d: 27, name: 'December'}, {m: 12, d: 28, name: 'December'}, {m: 12, d: 29, name: 'December'}, {m: 12, d: 30, name: 'December'},
-            {m: 12, d: 31, name: 'December'}, {m: 1, d: 1, name: 'January'}
+            {m: 12, d: 24, name: 'Dec'}, {m: 12, d: 25, name: 'Dec'},
+            {m: 12, d: 26, name: 'Dec'}, {m: 12, d: 27, name: 'Dec'},
+            {m: 12, d: 28, name: 'Dec'}, {m: 12, d: 29, name: 'Dec'},
+            {m: 12, d: 30, name: 'Dec'}, {m: 12, d: 31, name: 'Dec'}
         ];
 
         const grid = document.getElementById('grid');
@@ -222,13 +204,16 @@ Released under the MIT license: http://jsbin.mit-license.org
             const now = new Date();
             const todayM = now.getMonth() + 1;
             const todayD = now.getDate();
-            const key = (m < 10 ? '0'+m : m) + '-' + (d < 10 ? '0'+d : d);
-            let canOpen = (todayM === 12 && m === 12 && d <= todayD) || (todayM === 1 && m === 1 && d <= todayD) || (todayM === 1 && m === 12); 
+            const key = `12-${d}`;
+
+            // 오늘 날짜가 클릭한 날짜보다 크거나 같을 때만 열림 (12월 기준)
+            let canOpen = (todayM === 12 && todayD >= d);
+
             if (canOpen) {
                 document.getElementById('letter-content').innerText = letters[key] || "편지를 작성 중입니다.";
                 document.getElementById('modal').style.display = "block";
             } else {
-                alert(`${m}월 ${d}일까지 기다리세용.`);
+                alert(`12월 ${d}일에 열 수 있습니다!`);
             }
         }
 
